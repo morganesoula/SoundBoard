@@ -3,19 +3,26 @@ package com.ms.soundboard
 import android.content.pm.PackageManager
 import android.media.MediaRecorder
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Environment
+import android.os.SystemClock
+import android.text.Editable
+import android.text.TextWatcher
+import android.widget.Chronometer
+import android.widget.EditText
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.IOException
-import java.lang.IllegalStateException
-import java.util.jar.Manifest
 
 class MainActivity : AppCompatActivity() {
+
+    /************************************************
+        DATA
+     ************************************************/
 
     private val PERMISSIONS_REQUEST_CODE = 100
 
@@ -24,10 +31,23 @@ class MainActivity : AppCompatActivity() {
     private var state: Boolean = false
     private var recordingStopped: Boolean = false
 
+    private lateinit var nameEditText: EditText
+
+    private lateinit var chronometer: Chronometer
+
+    private var elapsedMillis: Long = 0
+
+
+    /************************************************
+        METHOD
+     ************************************************/
+
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        defineRecordingNamePopUp()
 
         startRecordButton.setOnClickListener {
             // CHECK PERMISSIONS IN ORDER TO RECORD, SAVE AND PLAY AUDIO
@@ -41,7 +61,6 @@ class MainActivity : AppCompatActivity() {
 
                 ActivityCompat.requestPermissions(this, permissions, PERMISSIONS_REQUEST_CODE)
             } else {
-                initializeMediaRecorder()
                 startRecording()
             }
         }
@@ -56,11 +75,48 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
+     * Popup - User needs to fill it with an original name
+     */
+    private fun defineRecordingNamePopUp() {
+
+        startRecordButton.isEnabled = true
+
+        nameEditText = EditText(this)
+
+        var alertDialog = AlertDialog.Builder(this)
+            .setMessage("How do you want to name this recording?")
+            .setView(nameEditText)
+            .setCancelable(false)
+            .setPositiveButton(R.string.OK) { dialog, _ ->
+                dialog.dismiss()
+                initializeMediaRecorder()
+            }
+
+        val dialogPopUp = alertDialog.create()
+        dialogPopUp.show()
+
+        dialogPopUp.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = false
+        nameEditText.addTextChangedListener (object: TextWatcher{
+            override fun afterTextChanged(s: Editable?) {
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                dialogPopUp.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = !s.isNullOrEmpty() || !s.isNullOrBlank()
+            }
+        })
+    }
+
+
+    /**
      * Define directory where audios will be saved
      * Set up media recorder
      */
     private fun initializeMediaRecorder() {
-        output = getExternalFilesDir(null)?.absolutePath + "/recording.mp3"
+        output = getExternalFilesDir(null)?.absolutePath + "/${nameEditText.text}.mp3"
         mediaRecorder = MediaRecorder()
 
         mediaRecorder?.setAudioSource(MediaRecorder.AudioSource.DEFAULT)
@@ -71,15 +127,21 @@ class MainActivity : AppCompatActivity() {
 
     /**
      * Method called when user clicks on Start button
+     * To see duration, chronometer also starts - base 00:00
      */
     private fun startRecording() {
         try {
             mediaRecorder?.prepare()
             mediaRecorder?.start()
 
-            state = true
-            Toast.makeText(this, "You're recording", Toast.LENGTH_SHORT).show()
+            startRecordButton.isEnabled = false
 
+            chronometer = findViewById(R.id.recordingTime)
+            chronometer.base = SystemClock.elapsedRealtime()
+
+            chronometer.start()
+
+            state = true
         } catch (e: IOException) {
             e.printStackTrace()
         } catch (e: IllegalStateException) {
@@ -90,6 +152,7 @@ class MainActivity : AppCompatActivity() {
 
     /**
      * Method called when user clicks on Pause button
+     * Elapsed time is saved
      */
     // Function to pause recording audio
     @RequiresApi(Build.VERSION_CODES.N)
@@ -97,9 +160,16 @@ class MainActivity : AppCompatActivity() {
         if (state) {
             if (!recordingStopped) {
                 mediaRecorder?.pause()
+
+                elapsedMillis = SystemClock.elapsedRealtime() - chronometer.base
+
+                chronometer.stop()
                 recordingStopped = true
                 pauseRecordButton.text = "Resume"
             } else {
+                chronometer.base = SystemClock.elapsedRealtime() - elapsedMillis
+                chronometer.start()
+
                 resumeRecording()
             }
         }
@@ -111,6 +181,7 @@ class MainActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.N)
     private fun resumeRecording() {
         mediaRecorder?.resume()
+
         pauseRecordButton.text = "Pause"
         recordingStopped = false
     }
@@ -121,15 +192,18 @@ class MainActivity : AppCompatActivity() {
     // Function to stop recording audio
     private fun stopRecording() {
         if (state) {
+            chronometer.stop()
             mediaRecorder?.stop()
             mediaRecorder?.release()
 
             state = false
-        } else {
-            Toast.makeText(this, "You're not recording right now", Toast.LENGTH_SHORT).show()
+
+            Toast.makeText(this, "Recording saved under the name ${nameEditText.text}.mp3", Toast.LENGTH_SHORT).show()
         }
 
     }
+
+
 
     /************************************************
         LIFECYCLE
