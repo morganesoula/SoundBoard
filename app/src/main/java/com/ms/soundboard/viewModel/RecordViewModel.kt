@@ -1,5 +1,6 @@
 package com.ms.soundboard.viewModel
 
+import android.app.Activity
 import android.app.Application
 import android.content.Context
 import android.content.res.AssetFileDescriptor
@@ -128,5 +129,24 @@ class RecordViewModel(application: Application) : AndroidViewModel(application) 
             Toast.makeText(context, "Problem found Exception", Toast.LENGTH_SHORT).show()
             Log.e("XXX", ex.message!!)
         }
+    }
+
+    /**
+     * Replace temporary file name by user choice
+     */
+    fun renameFile(activity: Activity, tmpRecordName: String, recordName: String, record: Record, recordViewModel: RecordViewModel) {
+        // Fetch temporary file
+        val tmpRecordFile = File(activity.getExternalFilesDir("SoundboardDir"), "${tmpRecordName}.mp3")
+
+        // Create new file with correct name
+        val fileRecordName = File(activity.getExternalFilesDir("SoundboardDir"), "${recordName}.mp3")
+
+        // Replace old file by new file
+        val recordRenamed = tmpRecordFile.renameTo(fileRecordName)
+
+        if (recordRenamed)
+            record.source = activity.getExternalFilesDir("SoundboardDir").toString() + "/${recordName}.mp3"
+            record.title = recordName
+            recordViewModel.setDuration(record)
     }
 }
