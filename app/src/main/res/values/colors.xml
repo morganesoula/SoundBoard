@@ -3,4 +3,8 @@
     <color name="colorPrimary">#6200EE</color>
     <color name="colorPrimaryDark">#3700B3</color>
     <color name="colorAccent">#03DAC5</color>
+    <color name="white">#FFF</color>
+    <color name="pauseColor">#e7a400</color>
+    <color name="playColor">#00a400</color>
+    <color name="holoGreen">#ff99cc00</color>
 </resources>

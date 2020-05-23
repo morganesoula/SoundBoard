@@ -1,5 +1,22 @@
 <resources>
     <string name="app_name">SoundBoard</string>
-    <string name="yes">oui</string>
     <string name="OK">OK</string>
+    <string name="welcome_to_soundboard">Welcome to SoundBoard !</string>
+    <string name="start_button_text">Start</string>
+    <string name="pause_button_text">Pause</string>
+    <string name="stop_button_text">Stop</string>
+    <string name="resume_button_text">Resume</string>
+    <string name="list">Liste</string>
+    <string name="add">Ajouter</string>
+    <string name="time_seconds_formatter">%02ds</string>
+    <string name="time_minutes_seconds_formatter">%02d:%02d</string>
+    <string name="time_hours_minutes_seconds_formatter">%02d:%02d:%02d</string>
+    <string name="general">General</string>
+    <string name="favourite">Favourite</string>
+    <string name="replay">Réécouter ?</string>
+    <string name="note_picture">Note picture</string>
+    <string name="saveRecord">Save</string>
+    <string name="deleteRecord">Delete</string>
+    <string name="addTitle">Let\'s name it first!</string>
+    <string name="cancel">Cancel</string>
 </resources>
