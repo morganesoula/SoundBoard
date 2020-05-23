@@ -302,18 +302,17 @@ class AddRecordFragment : Fragment() {
                 recordName = editText.text.toString()
 
                 if ("" != recordName)
-                    recordToSave?.let { record ->
+                    recordToSave?.let {
 
-                        val tmpRecordFile = File(activity?.getExternalFilesDir("SoundboardDir"), "${tmpRecordName}.mp3")
-                        val fileRecordName = File(activity?.getExternalFilesDir("SoundboardDir"), "${recordName}.mp3")
-                        val recordRenamed = tmpRecordFile.renameTo(fileRecordName)
+                        recordViewModel.renameFile(
+                            requireActivity(),
+                            tmpRecordName,
+                            recordName,
+                            it,
+                            recordViewModel
+                        )
 
-                        if (recordRenamed)
-                            record.source = activity?.getExternalFilesDir("SoundboardDir").toString() + "/${recordName}.mp3"
-                            recordViewModel.setDuration(record)
-                            record.title = recordName
-
-                            recordViewModel.insert(record)
+                        recordViewModel.insert(it)
                     }
             }
             .setNeutralButton(R.string.cancel) { dialog, _ ->
