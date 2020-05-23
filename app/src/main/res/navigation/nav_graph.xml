@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/listRecords">
+
+    <fragment
+        android:id="@+id/listRecords"
+        android:name="com.ms.soundboard.fragment.ListRecordFragment"
+        android:label="@string/list"
+        tools:layout="@layout/fragment_list_record" />
+
+    <fragment
+        android:id="@+id/addRecord"
+        android:name="com.ms.soundboard.fragment.AddRecordFragment"
+        android:label="@string/add"
+        tools:layout="@layout/fragment_add_record" />
+
+</navigation>
