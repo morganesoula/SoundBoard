@@ -13,11 +13,14 @@ import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
+import com.google.android.material.snackbar.Snackbar
+import com.ms.soundboard.R
 import com.ms.soundboard.model.Record
 import com.ms.soundboard.repository.RecordRepository
 import com.ms.soundboard.utils.SoundBoardDatabase
@@ -148,5 +151,14 @@ class RecordViewModel(application: Application) : AndroidViewModel(application) 
             record.source = activity.getExternalFilesDir("SoundboardDir").toString() + "/${recordName}.mp3"
             record.title = recordName
             recordViewModel.setDuration(record)
+    }
+
+    fun deleteRecordFromPersonalDirectory(tmpRecordName: String, activity: Activity, view: View) {
+        val fileToDelete = File(activity.getExternalFilesDir("SoundboardDir"), "${tmpRecordName}.mp3")
+
+        val deletionExecuted = fileToDelete.delete()
+
+        if (deletionExecuted)
+            Snackbar.make(view, R.string.deletionExecuted, Snackbar.LENGTH_SHORT).show()
     }
 }

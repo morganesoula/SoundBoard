@@ -19,4 +19,5 @@
     <string name="deleteRecord">Delete</string>
     <string name="addTitle">Let\'s name it first!</string>
     <string name="cancel">Cancel</string>
+    <string name="deletionExecuted">Recording deleted!</string>
 </resources>

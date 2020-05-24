@@ -202,10 +202,10 @@ class AddRecordFragment : Fragment() {
 
         } catch (e: IOException) {
             e.printStackTrace()
-            Log.e("XXX", e.message)
+            Log.e("XXX", e.message!!)
         } catch (e: IllegalStateException) {
             e.printStackTrace()
-            Log.e("XXX", e.message)
+            Log.e("XXX", e.message!!)
         }
 
     }
@@ -285,13 +285,16 @@ class AddRecordFragment : Fragment() {
         }
 
         deleteButton.setOnClickListener {
-            Log.i("XXX", "Deleted")
+            recordViewModel.deleteRecordFromPersonalDirectory(tmpRecordName, requireActivity(), it)
         }
 
     }
 
+    /**
+     * Let user defines a name for its record through a pop-up
+     */
     private fun defineRecordName(context: Context) {
-        var recordName = ""
+        var recordName: String
         val editText = EditText(context)
 
         val alertDialogBuilder = AlertDialog.Builder(context)
